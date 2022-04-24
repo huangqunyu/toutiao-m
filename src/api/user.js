@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+// import store from '@/store'
 
 export const login = data => {
   return request({
@@ -18,5 +19,20 @@ export const sendSms = mobile => {
     //     mobile
     // }
 
+  })
+}
+
+// 获取用户信息
+export const getUserInfo = () => {
+  return request({
+    method: 'GET',
+    url: '/v1_0/user'
+    // 专门用来发送请求头数据的
+    // headers: {
+    //     // 注意：该接口需要权限访问
+    //     // token的数据格式 Bearer token数据
+
+    //     Authorization: `Bearer ${store.state.user.token}`
+    // }
   })
 }

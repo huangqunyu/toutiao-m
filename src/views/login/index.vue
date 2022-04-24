@@ -3,7 +3,12 @@
     <!-- 导航栏开始 -->
     <van-nav-bar class="page-nav-bar" title="登陆">
       <!-- <i slot="left" class="iconfont icon-guanbi"></i> -->
-      <van-icon name="arrow-left" slot="left"  size="20" @click="$router.back()"/>
+      <van-icon
+        name="arrow-left"
+        slot="left"
+        size="20"
+        @click="$router.back()"
+      />
     </van-nav-bar>
     <!-- 导航栏结束 -->
     <!-- 登陆表单开始 -->
@@ -128,6 +133,8 @@ export default {
         } = await login(user)
         this.$store.commit('setUser', data)
         this.$toast.success('登录成功')
+        // 登陆成功后跳转回原页面
+        this.$router.back()
       } catch (err) {
         if (err.response.status === 400) {
           // console.log("手机号或验证码错误");
@@ -188,12 +195,12 @@ export default {
 }
 
 .van-field__control {
-  color: #323233, important !important;
+  color: #323233;
 }
 .van-count-down {
   margin: 14px 53px 10px 20px;
 }
-.icon-guanbi{
-  color: #fff!important;
+.icon-guanbi {
+  color: #fff;
 }
 </style>

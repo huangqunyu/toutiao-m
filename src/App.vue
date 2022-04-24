@@ -7,9 +7,10 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  methods: {},
+  created () {}
 }
 </script>
 
-<style lang="less">
-</style>
+<style lang="less"></style>

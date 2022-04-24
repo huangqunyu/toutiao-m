@@ -1,6 +1,37 @@
 <template>
   <div class="my-container">
-    <div class="header not-login">
+    <!-- 用户已登录 -->
+    <div v-if="user" class="header user-info">
+      <div class="base-info">
+        <div class="left">
+          <van-image class="avatar" round fit="cover" :src="userInfo.photo" />
+          <span class="name">{{ userInfo.name }}</span>
+        </div>
+        <div class="right">
+          <van-button class="rigth-btn" round size="mini">编辑资料</van-button>
+        </div>
+      </div>
+      <div class="data-stats">
+        <div class="data-item">
+          <span class="count">{{ userInfo.art_count }}</span>
+          <span class="text">头条</span>
+        </div>
+        <div class="data-item">
+          <span class="count">{{ userInfo.follow_count }}</span>
+          <span class="text">关注</span>
+        </div>
+        <div class="data-item">
+          <span class="count">{{ userInfo.fans_count }}</span>
+          <span class="text">粉丝</span>
+        </div>
+        <div class="data-item">
+          <span class="count">{{ userInfo.like_count }}</span>
+          <span class="text">获赞</span>
+        </div>
+      </div>
+    </div>
+    <!-- 用户未登录 -->
+    <div v-else class="header not-login">
       <div class="login-btn" @click="$router.push('/login')">
         <img class="mobile-img" src="~@/assets/mobile.png" alt="" /><span
           class="text"
@@ -8,42 +39,9 @@
         >
       </div>
     </div>
-    <div class="header user-info">
-      <div class="base-info">
-        <div class="left">
-          <van-image
-            class="avatar"
-            round
-            fit="cover"
-            src="https://img01.yzcdn.cn/vant/cat.jpeg"
-          />
-          <span class="name">黑马头条</span>
-        </div>
-        <div class="right">
-        <van-button class="rigth-btn" round size="mini">编辑资料</van-button>
-        </div>
-      </div>
-      <div class="data-stats">
-        <div class="data-item">
-          <span class="count">10</span>
-          <span class="text">头条</span>
-        </div>
-        <div class="data-item">
-          <span class="count">10</span>
-          <span class="text">关注</span>
-        </div>
-        <div class="data-item">
-          <span class="count">10</span>
-          <span class="text">粉丝</span>
-          </div>
-        <div class="data-item">
-          <span class="count">10</span>
-          <span class="text">获赞</span>
-          </div>
-      </div>
-    </div>
+
     <!-- 宫格导航开始 -->
-    <van-grid  class="grid-nav" :column-num="2" clickable>
+    <van-grid class="grid-nav" :column-num="2" clickable>
       <van-grid-item class="grid-item">
         <i slot="icon" class="iconfont icon-shoucang"></i>
         <span slot="text" class="text">收藏</span>
@@ -57,8 +55,14 @@
     <!-- 消息通知、小智同学、退出登录开始 -->
     <div class="cellBox">
       <van-cell title="消息通知" is-link />
-    <van-cell title="小智同学" is-link />
-    <van-cell  class="cell-return" title="退出登录" />
+      <van-cell title="小智同学" is-link />
+      <van-cell
+        v-if="user"
+        clickable
+        class="cell-return"
+        title="退出登录"
+        @click="onLogout"
+      />
     </div>
 
     <!-- 消息通知、小智同学、退出登录结束 -->
@@ -66,8 +70,50 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { getUserInfo } from '@/api/user.js'
 export default {
-  name: 'MyIndex'
+  name: 'MyIndex',
+  data () {
+    return {
+      userInfo: {}
+    } // 用户信息
+  },
+  computed: {
+    ...mapState(['user'])
+  },
+  methods: {
+    // 用户点击退出的弹窗
+    onLogout () {
+      this.$dialog
+        .confirm({
+          width: 300,
+          title: '确认退出吗'
+          // message: "弹窗内容",
+        })
+        .then(() => {
+          this.$store.commit('setUser', null)
+        })
+        .catch(() => {
+          // on cancel
+        })
+    },
+    // 记载用户信息
+    async loadUserInfo () {
+      try {
+        const { data } = await getUserInfo()
+        this.userInfo = data.data
+      } catch (error) {
+        this.$toast('获取用户数据失败' + error.message)
+      }
+    }
+  },
+  created () {
+    // 如果vuex中拿到了用户的token信息，证明我们这边需要加载用户相关信息
+    if (this.user) {
+      this.loadUserInfo()
+    }
+  }
 }
 </script>
 
@@ -109,27 +155,27 @@ export default {
       padding: 76px 32px 23px;
       box-sizing: border-box;
 
-      .left{
+      .left {
         display: flex;
         align-items: center;
-        .avatar{
+        .avatar {
           width: 132px;
           height: 132px;
           border: 4px solid #fff;
         }
-        .name{
+        .name {
           margin-left: 23px;
           font-size: 30px;
           color: #fff;
         }
       }
-      .right{
-        padding-bottom:30px ;
+      .right {
+        padding-bottom: 30px;
       }
     }
     .data-stats {
       display: flex;
-      .data-item{
+      .data-item {
         flex: 1;
         display: flex;
         height: 130px;
@@ -138,37 +184,37 @@ export default {
         align-items: center;
         flex-direction: column;
         color: #fff;
-        .count{
+        .count {
           font-size: 36px;
         }
-        .text{
+        .text {
           margin-top: 5px;
           font-size: 23px;
         }
       }
     }
   }
-  .grid-nav{
-    height: 141px;
-    i.iconfont{
+  .grid-nav {
+    height: 190px;
+    i.iconfont {
       font-size: 45px;
     }
-      .icon-shoucang{
-        color: #eb5253;
-      }
-      .icon-lishi{
-        color: #ff9d1d;
-      }
-    span{
+    .icon-shoucang {
+      color: #eb5253;
+    }
+    .icon-lishi {
+      color: #ff9d1d;
+    }
+    span {
       margin-top: 10px;
     }
-    span.text{
+    span.text {
       font-size: 28px;
     }
   }
-  .cellBox{
-    margin-top: 50px;
-    .cell-return{
+  .cellBox {
+    // margin-top: 45px;
+    .cell-return {
       margin-top: 15px;
       text-align: center;
       color: #d86262;

@@ -1,4 +1,3 @@
-
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { getItem, setItem } from '@/utils/storage.js'
@@ -12,8 +11,7 @@ export default new Vuex.Store({
     // user: JSON.parse(localStorage.getItem("TokenKey"))
     user: getItem(TokenKey)
   },
-  getters: {
-  },
+  getters: {},
   mutations: {
     setUser (state, userData) {
       state.user = userData
@@ -24,8 +22,6 @@ export default new Vuex.Store({
       setItem(TokenKey, state.user)
     }
   },
-  actions: {
-  },
-  modules: {
-  }
+  actions: {},
+  modules: {}
 })

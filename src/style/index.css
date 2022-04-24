@@ -82,6 +82,9 @@ body {
 .page-nav-bar .van-nav-bar__title {
   color: #FFF;
 }
+.page-nav-bar .van-nav-bar__left .van-icon {
+  color: #FFF;
+}
 i {
   margin: 0px 20px 0 15px;
 }

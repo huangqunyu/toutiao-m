@@ -10,23 +10,24 @@ const request = axios.create({
 // 请求拦截器
 
 // Add a request interceptor
-request.interceptors.request.use(function (config) {
-  // 请求发起会会经过这里
-  // const { user } = store.state
-  // if (user && user.token) {
-  //     config.headers.Authorization = `Bearer ${store.state.user.token}`
-  // }
-  if (store.state.user && store.state.user.token) {
-    config.headers.Authorization = `Bearer ${store.state.user.token}`
+request.interceptors.request.use(
+  function (config) {
+    // 请求发起会会经过这里
+    // const { user } = store.state
+    // if (user && user.token) {
+    //     config.headers.Authorization = `Bearer ${store.state.user.token}`
+    // }
+    if (store.state.user && store.state.user.token) {
+      config.headers.Authorization = `Bearer ${store.state.user.token}`
+    }
+    // 这里务必返回config,否则请求就停在这么出不去了
+    return config
+  },
+  function (error) {
+    // 如果请求出错了(还没有发出去),会进入这里
+    return Promise.reject(error)
   }
-  console.log(config)
-
-  // 这里务必返回config,否则请求就停在这么出不去了
-  return config
-}, function (error) {
-  // 如果请求出错了(还没有发出去),会进入这里
-  return Promise.reject(error)
-})
+)
 
 // 响应拦截器
 

@@ -22,7 +22,7 @@
       <div class="label-info-wrap">
         <span>{{ article.aut_name }}</span>
         <span>{{ article.comm_count }}评论</span>
-        <span>{{ article.pubdate }}</span>
+        <span>{{ article.pubdate | relativeTime }}</span>
       </div>
       <!-- 文章底部标签结束 -->
     </div>
@@ -100,6 +100,7 @@ export default {
   }
   .cover-wrap {
     display: flex;
+    padding: 30px 0;
     .cover-item {
       flex: 1;
       height: 146px;

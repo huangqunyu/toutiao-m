@@ -5,6 +5,9 @@ import store from './store'
 // 加载全局样式文件
 import '@/style/index.less'
 
+// 加载dayjs 初始化配置
+import '@/utils/dayjs'
+
 // 加载Vant核心组件库
 import Vant from 'vant'
 // 加载vant全局样式

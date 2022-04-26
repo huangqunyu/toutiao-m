@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <!-- 导航栏开始 -->
-    <van-nav-bar class="page-nav-bar">
+    <van-nav-bar class="page-nav-bar" fixed>
       <van-button
         class="search-btn"
         slot="title"
@@ -52,7 +52,9 @@ export default {
         const {
           data: { data }
         } = await getUserChannels()
+        console.log(data.channels)
         this.userChannels = data.channels
+        console.log(this.userChannels)
       } catch (error) {
         this.$toast('获取用户频道失败')
       }
@@ -69,10 +71,11 @@ export default {
 
 <style scoped lang="less">
 .home-container {
+  padding-top: 174px;
   padding-bottom: 100px;
-  // 这个样式不起作用
+
   ::v-deep .van-nav-bar__title {
-    max-width: 90%;
+    max-width: unset;
   }
   .search-btn {
     padding-top: 8px;
@@ -89,20 +92,32 @@ export default {
   ::v-deep .channel-tabs {
     .van-tabs__wrap {
       height: 82px;
-    }
-    .van-tab {
-      min-width: 200px;
-      font-size: 30px;
-      color: #777777;
-      border-right: 1px solid #edeff3;
-    }
-    .van-tab:last-child {
-      border-right: 0px solid #fff !important;
-    }
-    .van-tab--active {
-      color: #333333;
-    }
+      position: fixed;
+      top: 92px;
+      left: 0;
+      right: 0;
+      z-index: 1;
 
+      .van-tab {
+        min-width: 200px;
+        font-size: 30px;
+        color: #777777;
+        // border-left: 1px solid #edeff3;
+        // border-right: 1px solid pink;
+        border-right: 1px solid #edeff3;
+        // &:last-child {
+        //   border-right: 2px solid pink !important;
+        // }
+      }
+
+      .van-tab:nth-last-child(4) {
+        border-right: 0px;
+      }
+
+      .van-tab--active {
+        color: #333333;
+      }
+    }
     .van-tabs__line {
       width: 31px !important;
       height: 6px;
@@ -132,7 +147,7 @@ export default {
         content: "";
         position: absolute;
         left: 0;
-        width: 1px;
+        width: 2px;
         height: 100%;
         background-image: url(@/assets/gradient-gray-line.png);
         background-size: contain;

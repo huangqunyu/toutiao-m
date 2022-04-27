@@ -27,23 +27,42 @@
       </van-tab>
 
       <div slot="nav-right" class="placeholder"></div>
-      <div slot="nav-right" class="hamburger-btn">
+      <!-- 汉堡按钮 -->
+      <div
+        slot="nav-right"
+        class="hamburger-btn"
+        @click="isChennelEditShow = true"
+      >
         <i class="iconfont icon-gengduo"></i>
       </div>
     </van-tabs>
     <!-- 频道列表结束 -->
+    <!-- 频道编辑弹出层开始 -->
+    <van-popup
+      v-model="isChennelEditShow"
+      round
+      closeable
+      close-icon-position="top-left"
+      position="bottom"
+      :style="{ height: '90%' }"
+    >
+      <ChannelEdit></ChannelEdit>
+    </van-popup>
+    <!-- 频道编辑弹出层关闭 -->
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list.vue'
+import ChannelEdit from './components/channel-edit.vue'
 export default {
   name: 'HomeIndex',
   data () {
     return {
       active: 0,
-      userChannels: [] // 用户频道列表
+      userChannels: [], // 用户频道列表
+      isChennelEditShow: false // 控制编辑频道弹出层的显示与隐藏
     }
   },
   methods: {
@@ -61,7 +80,8 @@ export default {
     }
   },
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   created () {
     this.loadChannels()
@@ -139,6 +159,7 @@ export default {
       align-items: center;
       background-color: #fff;
       opacity: 0.902;
+      background-color: rgb(248, 245, 245);
 
       .icon-gengduo {
         font-size: 33px;
@@ -147,7 +168,7 @@ export default {
         content: "";
         position: absolute;
         left: 0;
-        width: 2px;
+        width: 1px;
         height: 100%;
         background-image: url(@/assets/gradient-gray-line.png);
         background-size: contain;

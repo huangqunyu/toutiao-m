@@ -8,14 +8,19 @@
       >
     </van-cell>
     <van-grid class="my-grid" :gutter="10">
+      <!-- 拿到我的频道用户数据，然后循环遍历渲染数据 -->
       <van-grid-item
         icon="clear"
         center
         class="grid-item"
-        v-for="value in 8"
-        :key="value"
-        text="文字"
-      />
+        v-for="(obj, index) in myChannels"
+        :key="obj.id"
+      >
+        <!-- 判断点击的频道是否和我们当前频道索引一致，一样就附加一个样式类名叫：active -->
+        <span class="text" :class="{ active: index === active }" slot="text">{{
+          obj.name
+        }}</span></van-grid-item
+      >
     </van-grid>
     <!-- 我的频道结束 -->
     <!-- 频道推荐开始 -->
@@ -38,25 +43,65 @@
 <script>
 // 这里可以导入其他文件（比如：组件，工具 js，第三方插件 js，json 文件，图片文件等等）
 // 例如：import 《组件名称》 from '《组件路径》';
+import { getAllChannels } from '@/api/channel'
 export default {
   // 此组件的名称
   name: 'ChannelEdit',
   // import 引入的组件需要注入到对象中才能使用,通常我们说的注册组件下载下方
   components: {},
   // 父传子在下面prpps中接收,可接收数组或者具体某个值
-  props: {},
+  props: {
+    myChannels: {
+      type: Array,
+      required: true
+    },
+    active: {
+      type: Number,
+      required: true
+    }
+  },
   data () {
     // 这里存放数据
-    return {}
+    return {
+      allChannels: []
+    }
   },
   // 计算属性 类似于 data 概念
-  computed: {},
+  computed: {
+    recommendChannels: {
+      set (value) {},
+      get () {
+        const channels = [] // 定义一个推荐频道的数组
+        this.allChannels.forEach((channel) => {
+          const res = this.myChannels.find((myChannel) => {
+            return myChannel.id === channel.id
+          })
+          if (!res) {
+            channels.push(channel)
+          }
+        })
+        return channels
+      }
+    }
+  },
   // 监控 data 中的数据变化
   watch: {},
   // 方法集合
-  methods: {},
+  methods: {
+    async loadAllChannels () {
+      try {
+        const { data } = await getAllChannels()
+        this.allChannels = data.data.channels
+        console.log(this.allChannels)
+      } catch (error) {
+        this.$toast('获取所有频道失败' + error.message)
+      }
+    }
+  },
   // 生命周期 - 创建完成（可以访问当前 this 实例）
-  created () {},
+  created () {
+    this.loadAllChannels()
+  },
   // 生命周期 - 挂载完成（可以访问 DOM 元素）
   mounted () {},
   beforeCreate () {}, // 生命周期 - 创建之前
@@ -92,10 +137,14 @@ export default {
       white-space: nowrap;
       background-color: #f4f5f6;
 
-      .van-grid-item__text {
+      .van-grid-item__text,
+      .text {
         font-size: 28px;
         margin-top: 0;
         color: #222;
+      }
+      .active {
+        color: #cc3c3c;
       }
     }
   }

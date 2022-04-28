@@ -78,7 +78,7 @@ export default {
         // 2、把请求到的数据放入data的list中
         //   注意，因为我们需要加载后面的数据，并且前面的数据不能没有，所以我们需要用到push,把后面加载的数据push到前面的数据后面，我们这边用了数组结构的方法
         const { results } = data
-        console.log(results)
+
         this.list.push(...results)
 
         // 3、本次数据加载完成以后需要把加载状态改为结束false

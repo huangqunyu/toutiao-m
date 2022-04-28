@@ -46,7 +46,7 @@
       position="bottom"
       :style="{ height: '90%' }"
     >
-      <ChannelEdit></ChannelEdit>
+      <ChannelEdit :my-channels="userChannels" :active="active"></ChannelEdit>
     </van-popup>
     <!-- 频道编辑弹出层关闭 -->
   </div>
@@ -71,9 +71,8 @@ export default {
         const {
           data: { data }
         } = await getUserChannels()
-        console.log(data.channels)
+
         this.userChannels = data.channels
-        console.log(this.userChannels)
       } catch (error) {
         this.$toast('获取用户频道失败')
       }

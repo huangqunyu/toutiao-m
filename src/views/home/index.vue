@@ -46,7 +46,14 @@
       position="bottom"
       :style="{ height: '90%' }"
     >
-      <ChannelEdit :my-channels="userChannels" :active="active"></ChannelEdit>
+      <ChannelEdit
+        :my-channels="userChannels"
+        :active="active"
+        @update-active="updateActive"
+        @updatauserChannels="updataUserChannels"
+        @delmyChannels="delMyChannels"
+      ></ChannelEdit>
+      <!-- @updatauserChannels="updataUserChannels" -->
     </van-popup>
     <!-- 频道编辑弹出层关闭 -->
   </div>
@@ -56,6 +63,8 @@
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list.vue'
 import ChannelEdit from './components/channel-edit.vue'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage'
 export default {
   name: 'HomeIndex',
   data () {
@@ -65,17 +74,55 @@ export default {
       isChennelEditShow: false // 控制编辑频道弹出层的显示与隐藏
     }
   },
+  computed: {
+    ...mapState(['user'])
+  },
   methods: {
     async loadChannels () {
       try {
-        const {
-          data: { data }
-        } = await getUserChannels()
-
-        this.userChannels = data.channels
+        // this.userChannels = data.channels;
+        let channels = []
+        if (this.user) {
+          const {
+            data: { data }
+          } = await getUserChannels()
+          channels = data.channels
+        } else {
+          // 用户未登录
+          // 从本地存储拿数据
+          const localChannels = getItem('TOUTIAO_CHANNELS')
+          // 判断本地存储有没有数据
+          if (localChannels) {
+            // 有数据则存到channls中
+            channels = localChannels
+          } else {
+            // 没有数据则请求推荐的频道
+            const {
+              data: { data }
+            } = await getUserChannels()
+            channels = data.channels
+          }
+        }
+        this.userChannels = channels
       } catch (error) {
         this.$toast('获取用户频道失败')
       }
+    },
+    // 根据子组件传进来的索引，让页面显示点击了哪个导航
+    updateActive (index, isEdit) {
+      if (!isEdit) {
+        // 让弹层隐藏
+        this.isChennelEditShow = false
+      }
+      this.active = index
+    },
+
+    updataUserChannels (channel) {
+      console.log('1')
+      this.userChannels.push(channel)
+    },
+    delMyChannels (index) {
+      this.userChannels.splice(index, 1)
     }
   },
   components: {

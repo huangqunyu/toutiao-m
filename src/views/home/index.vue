@@ -1,7 +1,9 @@
 <template>
   <div class="home-container">
     <!-- 导航栏开始 -->
+
     <van-nav-bar class="page-nav-bar" fixed>
+      <!-- van-button支持to属性，直接跳转到其他路由上 -->
       <van-button
         class="search-btn"
         slot="title"
@@ -9,6 +11,7 @@
         round
         size="small"
         icon="search"
+        to="/search"
         >搜索</van-button
       >
     </van-nav-bar>

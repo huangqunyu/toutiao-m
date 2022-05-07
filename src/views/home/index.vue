@@ -63,79 +63,78 @@
 </template>
 
 <script>
-import { getUserChannels } from '@/api/user'
-import ArticleList from './components/article-list.vue'
-import ChannelEdit from './components/channel-edit.vue'
-import { mapState } from 'vuex'
-import { getItem } from '@/utils/storage'
+import { getUserChannels } from "@/api/user";
+import ArticleList from "./components/article-list.vue";
+import ChannelEdit from "./components/channel-edit.vue";
+import { mapState } from "vuex";
+import { getItem } from "@/utils/storage";
 export default {
-  name: 'HomeIndex',
-  data () {
+  name: "HomeIndex",
+  data() {
     return {
       active: 0,
       userChannels: [], // 用户频道列表
-      isChennelEditShow: false // 控制编辑频道弹出层的显示与隐藏
-    }
+      isChennelEditShow: false, // 控制编辑频道弹出层的显示与隐藏
+    };
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(["user"]),
   },
   methods: {
-    async loadChannels () {
+    async loadChannels() {
       try {
         // this.userChannels = data.channels;
-        let channels = []
+        let channels = [];
         if (this.user) {
           const {
-            data: { data }
-          } = await getUserChannels()
-          channels = data.channels
+            data: { data },
+          } = await getUserChannels();
+          channels = data.channels;
         } else {
           // 用户未登录
           // 从本地存储拿数据
-          const localChannels = getItem('TOUTIAO_CHANNELS')
+          const localChannels = getItem("TOUTIAO_CHANNELS");
           // 判断本地存储有没有数据
           if (localChannels) {
             // 有数据则存到channls中
-            channels = localChannels
+            channels = localChannels;
           } else {
             // 没有数据则请求推荐的频道
             const {
-              data: { data }
-            } = await getUserChannels()
-            channels = data.channels
+              data: { data },
+            } = await getUserChannels();
+            channels = data.channels;
           }
         }
-        this.userChannels = channels
+        this.userChannels = channels;
       } catch (error) {
-        this.$toast('获取用户频道失败')
+        this.$toast("获取用户频道失败");
       }
     },
     // 根据子组件传进来的索引，让页面显示点击了哪个导航
-    updateActive (index, isEdit) {
+    updateActive(index, isEdit) {
       if (!isEdit) {
         // 让弹层隐藏
-        this.isChennelEditShow = false
+        this.isChennelEditShow = false;
       }
-      this.active = index
+      this.active = index;
     },
 
-    updataUserChannels (channel) {
-      console.log('1')
-      this.userChannels.push(channel)
+    updataUserChannels(channel) {
+      this.userChannels.push(channel);
     },
-    delMyChannels (index) {
-      this.userChannels.splice(index, 1)
-    }
+    delMyChannels(index) {
+      this.userChannels.splice(index, 1);
+    },
   },
   components: {
     ArticleList,
-    ChannelEdit
+    ChannelEdit,
   },
-  created () {
-    this.loadChannels()
-  }
-}
+  created() {
+    this.loadChannels();
+  },
+};
 </script>
 
 <style scoped lang="less">

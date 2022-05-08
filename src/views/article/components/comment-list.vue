@@ -4,26 +4,54 @@
     :finished="finished"
     finished-text="没有更多了"
     @load="onLoad"
+    :error.sync="error"
+    error-text="加载失败,请点击重试"
   >
-    <van-cell v-for="item in list" :key="item" :title="item" />
+    <CommentItem
+      v-for="(item, index) in list"
+      :key="index"
+      :comment="item"
+    ></CommentItem>
   </van-list>
 </template>
 <script>
 //这里可以导入其他文件（比如：组件，工具 js，第三方插件 js，json 文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
+// 引入获取文章评论接口
+import { getComments } from "@/api/comment";
+// 引入评论项组件
+import CommentItem from "./comment-item.vue";
 export default {
   //此组件的名称
   name: "CommentList",
   //import 引入的组件需要注入到对象中才能使用,通常我们说的注册组件写在components: {}里面
-  components: {},
+  components: {
+    CommentItem,
+  },
   //父传子在下面prpps中接收,可接收数组或者具体某个值
-  props: {},
+  props: {
+    // 父组件传递过来的文章ID
+    source: {
+      type: [Number, String, Object],
+      required: true,
+    },
+    list: {
+      type: Array,
+      // 给了个默认值,默认值需要用函数返回的形式写
+      default: () => {
+        [];
+      },
+    },
+  },
   data() {
     //这里存放数据
     return {
-      list: [],
+      // list: [],
       loading: false,
       finished: false,
+      offset: null, //获取下一页数据的标记
+      limit: 10,
+      error: false,
     };
   },
   //计算属性 类似于 data 概念
@@ -32,26 +60,44 @@ export default {
   watch: {},
   //方法集合
   methods: {
-    onLoad() {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1);
-        }
+    async onLoad() {
+      try {
+        // 1、请求获取接口数据
+        const { data } = await getComments({
+          type: "a", //获取文章评论 评论类型，a-对文章(article)的评论
+          source: this.source, //源id，文章id或评论id
+          offset: this.offset, //获取评论数据的偏移量，值为评论id，表示从此id的数据向后取，不传表示从第一页开始读取数据
+          limit: this.limit, //获取的评论数据个数，不传表示采用后端服务设定的默认每页数据量
+        });
 
-        // 加载状态结束
+        // 2、将数据添加到列表中
+        const { results } = data.data;
+        this.list.push(...results);
+        // 把评论的总数量传递给父组件
+        this.$emit("onload-success", data.data);
+
+        // 3、loading 设置为false
         this.loading = false;
 
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
+        // 4、判断是否还有数据
+        if (results.length) {
+          //    有就更新获取下一页数据页码
+          this.offset = data.data.last_id;
+        } else {
+          //    没有就finish设置为true
           this.finished = true;
         }
-      }, 1000);
+      } catch (error) {
+        this.loading = false;
+        this.error = true;
+      }
     },
   },
   //生命周期 - 创建完成（可以访问当前 this 实例）
-  created() {},
+  created() {
+    // 由于徽标是在评论组件渲染出来后才知道有多少评论的，所以页面刚打开不显示评论数量，我们需要当页面昂打开就要调用评论加载
+    this.onLoad();
+  },
   //生命周期 - 挂载完成（可以访问 DOM 元素）
   mounted() {},
   beforeCreate() {}, //生命周期 - 创建之前

@@ -84,15 +84,26 @@
         </div>
         <van-divider>正文结束</van-divider>
         <!-- 文章评论列表组件复用 -->
-        <CommentList></CommentList>
+        <!-- 把文章的ID传递到评论的子组件中 -->
+        <CommentList
+          :list="commentList"
+          :source="article.art_id"
+          @onload-success="totalCommentCount = $event.total_count"
+        ></CommentList>
         <!-- /文章评论列表组件复用 -->
 
         <!-- 底部区域 -->
         <div class="article-bottom">
-          <van-button class="comment-btn" type="default" round size="small"
+          <van-button
+            class="comment-btn"
+            type="default"
+            round
+            size="small"
+            @click="isPostShow = true"
             >写评论</van-button
           >
-          <van-icon name="comment-o" badge="123" color="#777" />
+          <!-- 徽标 -->
+          <van-icon name="comment-o" :badge="totalCommentCount" color="#777" />
           <!-- <van-icon color="#777" name="star-o" /> -->
           <!-- 收藏组件的复用 -->
           <CollectArticle
@@ -110,6 +121,14 @@
           <van-icon name="share" color="#777777"></van-icon>
         </div>
         <!-- /底部区域 -->
+        <!-- 发布评论弹出层开始 -->
+        <van-popup v-model="isPostShow" position="bottom">
+          <CommentPost
+            :target="article.art_id"
+            @post-success="onPostSuccess"
+          ></CommentPost>
+        </van-popup>
+        <!-- 发布评论弹出层结束 -->
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -142,6 +161,8 @@ import CollectArticle from "@/components/collect-article";
 import LikeArticle from "@/components/like-article";
 // 引入文章评论组件
 import CommentList from "./components/comment-list.vue";
+// 引入文章评论的弹出层
+import CommentPost from "./components/comment-post.vue";
 
 export default {
   name: "ArticleIndex",
@@ -150,6 +171,7 @@ export default {
     CollectArticle,
     LikeArticle,
     CommentList,
+    CommentPost,
   },
   props: {
     articleId: {
@@ -165,6 +187,11 @@ export default {
       loading: true,
       //失败的情况变量
       errorStatus: 0,
+      totalCommentCount: 0,
+      // 弹出层的变量，控制弹出层显示和隐藏
+      isPostShow: false,
+      // 评论列表
+      commentList: [],
     };
   },
   computed: {},
@@ -228,6 +255,13 @@ export default {
           });
         };
       });
+    },
+    onPostSuccess(data) {
+      // 弹出层关闭
+      this.isPostShow = false;
+      // 把数据渲染到评论列表的最上方
+      this.commentList.unshift(data.new_obj);
+      this.totalCommentCount++;
     },
   },
 };

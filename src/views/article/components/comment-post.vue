@@ -22,6 +22,13 @@ import { addComment } from "@/api/comment";
 export default {
   name: "CommentPost",
   components: {},
+  // 使用inject:这个选项来接受祖先组件传过来的值
+  inject: {
+    articleId: {
+      type: [Number, String, Object],
+      default: null,
+    },
+  },
   props: {
     target: {
       type: [Number, String, Object],
@@ -47,11 +54,10 @@ export default {
 
       try {
         const { data } = await addComment({
-          target: this.target, //评论的目标id（评论文章即为文章id，对评论进行回复则为评论id）
+          target: this.target.toString(), //评论的目标id（评论文章即为文章id，对评论进行回复则为评论id）
           content: this.message, //评论的内容
-          art_id: null, //文章id，对评论内容发表回复时，需要传递此参数，表明所属文章id。对文章进行评论，不要传此参数。
+          art_id: this.articleId ? this.articleId.toString() : null, //文章id，对评论内容发表回复时，需要传递此参数，表明所属文章id。对文章进行评论，不要传此参数。
         });
-        console.log(data.data);
         // 清空弹出层文本内容
         this.message = "";
         // 自定义一个事件，让父组件执行，顺带把我们成功评论返回回来的数据给父组件使用

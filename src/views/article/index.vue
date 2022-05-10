@@ -89,6 +89,7 @@
           :list="commentList"
           :source="article.art_id"
           @onload-success="totalCommentCount = $event.total_count"
+          @reply-click="onReplyClick"
         ></CommentList>
         <!-- /文章评论列表组件复用 -->
 
@@ -147,6 +148,23 @@
       </div>
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
+    <!-- 评论回复弹出层开始 -->
+    <!-- 弹出层是蓝渲染的：
+        只有在第一次展示的时候才会渲染里面的内容，
+        之后它的关闭和显示都是在切换内容的显示和隐藏  -->
+    <van-popup v-model="isReplyShow" position="bottom" style="height: 86%">
+      <!-- v-if 条件渲染
+              true:渲染元素节点
+              false:不渲染     
+        -->
+      <CommentReplay
+        v-if="isReplyShow"
+        :comment="currentComment"
+        @close="isReplyShow = false"
+      ></CommentReplay>
+    </van-popup>
+
+    <!-- 评论回复弹出层结束 -->
   </div>
 </template>
 
@@ -163,6 +181,8 @@ import LikeArticle from "@/components/like-article";
 import CommentList from "./components/comment-list.vue";
 // 引入文章评论的弹出层
 import CommentPost from "./components/comment-post.vue";
+// 引入评论回复组件
+import CommentReplay from "./components/comment-replay.vue";
 
 export default {
   name: "ArticleIndex",
@@ -172,6 +192,15 @@ export default {
     LikeArticle,
     CommentList,
     CommentPost,
+    CommentReplay,
+  },
+  // 依赖注入
+  // 给所有的后台组件提供数据
+  // 后台组件需要自行决定需不需要接收
+  provide: function () {
+    return {
+      articleId: this.articleId,
+    };
   },
   props: {
     articleId: {
@@ -192,6 +221,10 @@ export default {
       isPostShow: false,
       // 评论列表
       commentList: [],
+      // 评论回复弹出层，控制弹出层的显示与隐藏
+      isReplyShow: false,
+      // 当前点击回复的评论项
+      currentComment: {},
     };
   },
   computed: {},
@@ -262,6 +295,12 @@ export default {
       // 把数据渲染到评论列表的最上方
       this.commentList.unshift(data.new_obj);
       this.totalCommentCount++;
+    },
+
+    // 点击评论列表项中的回复，控制弹出层的显示与隐藏
+    onReplyClick(comment) {
+      this.currentComment = comment;
+      this.isReplyShow = true;
     },
   },
 };

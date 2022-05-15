@@ -1,67 +1,67 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 // 配置自己的路由表
 const routes = [
   {
-    path: '/login',
-    name: 'login',
+    path: "/login",
+    name: "login",
     // 懒加载  调用到了再引入
-    component: () => import('@/views/login')
+    component: () => import("@/views/login"),
   },
   {
-    path: '/',
+    path: "/",
     // name: 'layout',
     // 懒加载  调用到了再引入
-    component: () => import('@/views/layout'),
+    component: () => import("@/views/layout"),
     children: [
       {
-        path: '',
-        name: 'home',
-        component: () => import('@/views/home')
+        path: "",
+        name: "home",
+        component: () => import("@/views/home"),
       },
       {
-        path: '/qa',
-        name: 'qa',
-        component: () => import('@/views/qa')
+        path: "/qa",
+        name: "qa",
+        component: () => import("@/views/qa"),
       },
       {
-        path: '/video',
-        name: 'video',
-        component: () => import('@/views/video')
+        path: "/video",
+        name: "video",
+        component: () => import("@/views/video"),
       },
       {
-        path: '/my',
-        name: 'my',
-        component: () => import('@/views/my')
-      }
-    ]
+        path: "/my",
+        name: "my",
+        component: () => import("@/views/my"),
+      },
+    ],
   },
   // 文章详情路由
   {
-    path: '/article/:articleId',
-    name: 'article',
-    component: () => import('@/views/article'),
+    path: "/article/:articleId",
+    name: "article",
+    component: () => import("@/views/article"),
     // 开启路由传参，说白了就是把路由参数映射到组件的props数据中
-    props: true
+    props: true,
   },
   // 搜索模块的路由
   {
-    path: '/search',
-    name: 'search',
-    component: () => import('@/views/search')
+    path: "/search",
+    name: "search",
+    component: () => import("@/views/search"),
   },
   {
-    path: '/user/profile',
-    name: 'user-profile',
-    component: () => import('@/views/user-profile')
-  }
-]
+    path: "/user/profile",
+    name: "user-profile",
+    component: () => import("@/views/user-profile"),
+  },
+];
 
 const router = new VueRouter({
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
